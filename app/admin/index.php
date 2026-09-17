@@ -63,7 +63,6 @@ if ($section === 'activity-logs') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Admin Dashboard</title>
 </head>
 
@@ -73,7 +72,6 @@ if ($section === 'activity-logs') {
 
     <a href="../../auth/signout.php">Sign Out</a>
 
-    <br>
     <hr>
 
     <nav>
@@ -85,7 +83,7 @@ if ($section === 'activity-logs') {
 
         <h4>Activity Logs</h4>
 
-        <table border="1" cellpadding="5" cellspacing="0">
+        <table id="activityTable" border="1" cellpadding="5" cellspacing="0">
 
             <thead>
                 <tr>
@@ -151,7 +149,7 @@ if ($section === 'activity-logs') {
 
         <h4>User Sessions</h4>
 
-        <table border="1" cellpadding="5" cellspacing="0">
+        <table id="sessionTable" border="1" cellpadding="5" cellspacing="0">
 
             <thead>
                 <tr>
@@ -241,7 +239,5 @@ if ($section === 'activity-logs') {
         </table>
 
     <?php endif; ?>
-
 </body>
-
 </html>
