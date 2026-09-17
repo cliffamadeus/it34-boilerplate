@@ -29,8 +29,10 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     } else {
 
         if(loginUser($pdo,$login,$password)){
+            // Start session timer
+            
+            
             // Log complete login attempt
-
             logActivity(
                 $pdo,$_SESSION['user_id'],
                 $_SESSION['user_email'],
