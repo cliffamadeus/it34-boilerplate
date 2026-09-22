@@ -18,20 +18,19 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     if ($login==='' || $password ===''){
         
         // Log incomplete login attempt
-       logActivity(
-            $pdo,
-            null,
-            $login,
-            'login',
-            'failed'
-        );
+    logActivity(
+        $pdo,
+        null,
+        $login,
+        'login',
+        'failed'
+    );
 
     } else {
 
-        if(loginUser($pdo,$login,$password)){
-            // Start session timer
-            
-            
+        $result = loginUser($pdo,$login,$password);
+
+        if($result===true){
             // Log complete login attempt
             logActivity(
                 $pdo,$_SESSION['user_id'],
@@ -40,11 +39,17 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
                 'success'
             );
 
-            echo 'Location: ' . BASE_URL . '/app/' . $_SESSION['user_role'] . '/index.php';
             header('Location: ' . BASE_URL . '/app/' . $_SESSION['user_role'] . '/index.php');
             exit;
-        }
 
+        } elseif ($result === 'active_session'){
+
+            $error = 'This account is already logged in on another device';
+
+        } else {
+
+            $error = 'Invalid Login Credentials';
+        }
     }
 }
 
@@ -61,18 +66,20 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
 <form method="POST">
     <label>Username or Email</label>
-    <input type="text"
-           name="login"
-           required>
+    <input type="text" name="login" required>
     <br>
     <br>
     <label>Password</label>
-    <input type="password"
-           name="password"
-           required>
+    <input type="password" name="password"required>
     <br>
     <button type="submit">Sign In</button>
 </form>
-    
+
+<?php if ($error !== ''): ?>
+    <p>
+        <?= htmlspecialchars($error) ?>
+    </p>
+<?php endif; ?>
+
 </body>
 </html>

@@ -3,7 +3,7 @@ session_start();
 
 require_once(__DIR__ . '/../includes/activity-logger.php');
 
-define('BASE_URL','http://localhost/it34');
+define('BASE_URL','http://localhost/it34-boilerplate');
 
 define('DB_HOST','localhost');
 define('DB_NAME','it34_lab_db');

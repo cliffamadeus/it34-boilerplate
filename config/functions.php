@@ -95,6 +95,23 @@ function getSessionDuration($pdo)
     return (int) $stmt->fetchColumn();
 }
 
+// Function check user for active session
+function hasActiveUserSession($pdo,$user_id)
+{
+    $stmt = $pdo->prepare("
+        SELECT session_id
+        FROM user_sessions
+        WHERE user_id = :user_id
+            AND session_end IS NULL
+        LIMIT 1
+    ");
+
+    $stmt->execute([
+        'user_id' => $user_id
+    ]);
+
+    return (bool) $stmt->fetchColumn();
+}
 
 // ------------------------------------------------------
 // Login
@@ -133,6 +150,11 @@ function loginUser($pdo, $login, $password)
         return false;
     }
 
+    //Check if user already has an active session
+    if(hasActiveUserSession($pdo,$user['user_id'])){
+        return 'active_session';
+    }
+    
     // Store user information in PHP session
     $_SESSION['user_id']       = $user['user_id'];
     $_SESSION['user_email']    = $user['user_email'];
