@@ -1,15 +1,4 @@
-<?php
-
-// ------------------------------------------------------
-// Redirect
-// ------------------------------------------------------
-
-function redirect($path)
-{
-    header("Location: " . BASE_URL . $path);
-    exit;
-}
-
+<?php 
 // ------------------------------------------------------
 // Session Functions
 // ------------------------------------------------------
@@ -95,14 +84,15 @@ function getSessionDuration($pdo)
     return (int) $stmt->fetchColumn();
 }
 
+
 // Function check user for active session
-function hasActiveUserSession($pdo,$user_id)
+function hasActiveUserSession($pdo, $user_id)
 {
     $stmt = $pdo->prepare("
         SELECT session_id
         FROM user_sessions
         WHERE user_id = :user_id
-            AND session_end IS NULL
+        AND session_end IS NULL
         LIMIT 1
     ");
 
@@ -113,84 +103,47 @@ function hasActiveUserSession($pdo,$user_id)
     return (bool) $stmt->fetchColumn();
 }
 
+
+
 // ------------------------------------------------------
-// Login
+// Session Timeout
 // ------------------------------------------------------
 
-function loginUser($pdo, $login, $password)
+function checkSessionTimeout()
 {
-    $sql = "
-        SELECT
-            user_id,
-            user_email,
-            user_username,
-            user_password,
-            user_role
-        FROM users
-        WHERE user_email = :login
-            OR user_username = :login
-        LIMIT 1
-    ";
+    global $pdo;
 
-    $stmt = $pdo->prepare($sql);
+    // 10 seconds for testing
+    // 1800 seconds = 30 minutes
+    $timeout = 1800;
 
-    $stmt->execute([
-        'login' => $login
-    ]);
+    // Check last activity
+    if (isset($_SESSION['last_activity'])) {
 
-    $user = $stmt->fetch();
+        $inactive = time() - $_SESSION['last_activity'];
 
-    // User not found
-    if (!$user) {
-        return false;
+        if ($inactive >= $timeout) {
+
+            // End database session
+            endUserSession($pdo);
+
+            // Destroy PHP session
+            session_unset();
+            session_destroy();
+
+            // Redirect to login
+            header(
+                'Location: ' .
+                BASE_URL .
+                '/index.php?timeout=1'
+            );
+
+            exit;
+        }
     }
 
-    // Invalid password
-    if (!password_verify($password, $user['user_password'])) {
-        return false;
-    }
-
-    //Check if user already has an active session
-    if(hasActiveUserSession($pdo,$user['user_id'])){
-        return 'active_session';
-    }
-    
-    // Store user information in PHP session
-    $_SESSION['user_id']       = $user['user_id'];
-    $_SESSION['user_email']    = $user['user_email'];
-    $_SESSION['user_username'] = $user['user_username'];
-    $_SESSION['user_role']     = $user['user_role'];
-
-    // Create database session record
-    $_SESSION['session_id'] = startUserSession($pdo);
-
-    return true;
-}
-
-
-// ------------------------------------------------------
-// Authentication
-// ------------------------------------------------------
-
-// Require Login
-function requireLogin()
-{
-    if (!isset($_SESSION['user_id'])) {
-        header('Location: ' . BASE_URL . '/index.php');
-        exit;
-    }
-}
-
-
-// Require Specific Role
-function requireRole($role)
-{
-    requireLogin();
-
-    if ($_SESSION['user_role'] !== $role) {
-        http_response_code(403);
-        die('Access denied.');
-    }
+    // Update last activity
+    $_SESSION['last_activity'] = time();
 }
 
 ?>

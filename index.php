@@ -1,6 +1,5 @@
 <?php
 require_once 'config/config.php';
-require_once 'config/functions.php';
 
 if(isset($_SESSION['user_id'])){
     header('Location: ' . BASE_URL . '/app/' . $_SESSION['user_role'] . '/index.php');
@@ -79,6 +78,10 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     <p>
         <?= htmlspecialchars($error) ?>
     </p>
+<?php endif; ?>
+
+<?php if (isset($_GET['timeout'])): ?>
+    <p>Your session has expired due to inactivity. Please log in again.</p>
 <?php endif; ?>
 
 </body>
