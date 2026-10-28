@@ -1,6 +1,7 @@
 <?php
 require_once '../config/config.php';
-require_once '../config/functions.php';
+
+requireCsrfToken();
 
 if(isset($_SESSION['user_id'])){
     logActivity(

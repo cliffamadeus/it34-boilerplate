@@ -69,8 +69,11 @@ if ($section === 'activity-logs') {
 
     <h1>Welcome Admin</h1>
 
-    <a href="../../auth/signout.php">Sign Out</a>
-
+    <form method="POST" action="../../auth/signout.php">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generateCsrfToken()) ?>" >
+        <button type="submit"> Sign Out </button>
+    </form>
+    
     <hr>
 
     <nav>

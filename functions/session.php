@@ -1,7 +1,4 @@
 <?php 
-// ------------------------------------------------------
-// Session Functions
-// ------------------------------------------------------
 
 // Start User Session
 function startUserSession($pdo)
@@ -104,11 +101,7 @@ function hasActiveUserSession($pdo, $user_id)
 }
 
 
-
-// ------------------------------------------------------
 // Session Timeout
-// ------------------------------------------------------
-
 function checkSessionTimeout()
 {
     global $pdo;
